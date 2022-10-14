@@ -1,0 +1,97 @@
+﻿@page "/calculator"
+@inject IHttpClientFactory httpClientFactory
+
+<h1 class=text-danger> Calculator </h1>
+<br />
+<div>
+    <div class="row">
+        <div class="col-lg-3">
+            <p>First Number</p>
+        </div>
+        <div class="col-lg-4">
+            <input type="text" name="fnum" @bind="@fnum" />
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-3">
+            <p>Second Number</p>
+        </div>
+        <div class="col-lg-4">
+            <input type="text" name="snum" @bind="@snum" />
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-3">
+            <p>res</p>
+        </div>
+        <div class="col-lg-4">
+            <input type="text" readonly @bind="@res" />
+            <p>@error</p>
+        </div>
+    </div> <br />
+    <div class="row">
+        <div class="col-lg-2">
+            <button @onclick="AddNumbers" class="btn btn-secondary">Add (+)</button>
+        </div>
+        <div class="col-lg-2">
+            <button @onclick="SubtractNumbers" class="btn btn-primary">Subtract (−)</button>
+        </div>
+        <div class="col-lg-2">
+            <button @onclick="MultiplyNumbers" class="btn btn-success ">Multiply (X)</button>
+        </div>
+        <div class="col-lg-2">
+            <button @onclick="DivideNumbers" class="btn btn-info">Divide (/)</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    double fnum, snum, res;
+    string operation = string.Empty, error;
+
+    public async void AddNumbers()
+    {
+        operation = "add";
+        await Loadres();
+    }
+
+    public async void SubtractNumbers()
+    {
+        operation = "subtract";
+        await Loadres();
+    }
+
+    public async void MultiplyNumbers()
+    {
+        operation = "multiply";
+        await Loadres();
+    }
+
+    public async void DivideNumbers()
+    {
+        operation = "divide";
+        await Loadres();
+    }
+
+    protected async Task Loadres()
+    {
+        error = string.Empty;
+        if (snum == 0 && operation == "divide")
+        {
+            error = "snum should be greater than 0";
+            res = 0;
+        }
+        else
+        {
+            res = await httpClientFactory.CreateClient("Anonymous").GetFromJsonAsync<double>($"api/calculator/fnum/{fnum}/snum/{snum}/operation/{operation}");
+        }
+        StateHasChanged();
+    }
+}
+
+
+
+
+
